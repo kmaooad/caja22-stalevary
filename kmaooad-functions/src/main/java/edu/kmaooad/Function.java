@@ -1,5 +1,6 @@
 package edu.kmaooad;
 
+import org.json.JSONObject;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -22,19 +23,17 @@ public class Function {
     @FunctionName("TelegramWebhook")
     public HttpResponseMessage run(
             @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.POST},
-                authLevel = AuthorizationLevel.FUNCTION)
-                HttpRequestMessage<Optional<String>> request,
+                    name = "req",
+                    methods = {HttpMethod.POST},
+                    authLevel = AuthorizationLevel.FUNCTION)
+            HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
+        JSONObject obj = new JSONObject(request.getBody().get());
 
-        final String name = request.getBody().orElse(null);
+        JSONObject msg = obj.getJSONObject("message");
+        int msgId = msg.getInt("message_id");
 
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
-        }
+        return request.createResponseBuilder(HttpStatus.OK).body(msgId).build();
     }
 }
