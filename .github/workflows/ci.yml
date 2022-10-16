@@ -9,7 +9,7 @@ on:
 
 env:
   PACKAGE_DIRECTORY: './kmaooad-functions' # set this to the directory which contains pom.xml file
-  JAVA_VERSION: '11' # set this to the java version to use
+  JAVA_VERSION: '19' # set this to the java version to use
 
 jobs:
   build-and-test:
@@ -36,8 +36,7 @@ jobs:
           pushd './${{ env.PACKAGE_DIRECTORY }}'
           mvn -B test
           popd
-      
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-      
-      
+
