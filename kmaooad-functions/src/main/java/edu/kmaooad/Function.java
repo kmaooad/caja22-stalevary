@@ -16,6 +16,9 @@ import java.util.Optional;
  * Azure Functions with HTTP Trigger.
  */
 public class Function {
+    private static final String MONGO_URL = System.getenv("MONGO_URL");
+    private static final String DATABASE = "caja22-stalevary";
+    private static final String COLLECTION = "messages";
     /**
      * This function listens at endpoint "/api/TelegramWebhook". To invoke it using "curl" command in bash:
      * curl -d "HTTP Body" {your host}/api/TelegramWebhook
@@ -28,10 +31,12 @@ public class Function {
                     authLevel = AuthorizationLevel.FUNCTION)
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
+        MessageRepository messageRepository = new MessageRepository(MONGO_URL,DATABASE,COLLECTION);
+
         context.getLogger().info("Java HTTP trigger processed a request.");
         JSONObject obj = new JSONObject(request.getBody().get());
-
         JSONObject msg = obj.getJSONObject("message");
+        messageRepository.addMessage(msg);
         int msgId = msg.getInt("message_id");
 
         return request.createResponseBuilder(HttpStatus.OK).body(msgId).build();
