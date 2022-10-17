@@ -1,8 +1,6 @@
 package edu.kmaooad;
 
-import edu.kmaooad.exception.DatabaseConnectionException;
 import edu.kmaooad.exception.EmptyRequestBodyException;
-import edu.kmaooad.exception.InvalidOperationException;
 import edu.kmaooad.repository.MessageRepository;
 import edu.kmaooad.repository.MessageRepositoryImpl;
 import org.json.JSONException;
@@ -22,7 +20,7 @@ import java.util.Optional;
  * Azure Functions with HTTP Trigger.
  */
 public class Function {
-    private static final String MONGO_URL = System.getenv("MONGO_URL");
+    private static final String MONGO_URL = "mongodb+srv://admin:Hi6EWgtnkBej3pcn@cluster0.rxe1xqc.mongodb.net/?retryWrites=true&w=majority";
     private static final String DATABASE = "caja22-stalevary";
     private static final String COLLECTION = "messages";
 
@@ -59,7 +57,7 @@ public class Function {
         try {
             MessageRepository messageRepository = new MessageRepositoryImpl(MONGO_URL, DATABASE, COLLECTION);
             messageRepository.addMessage(messageJson);
-        } catch (InvalidOperationException | DatabaseConnectionException exception) {
+        } catch (Exception exception) {
 
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
                     .body(exception.getMessage())
