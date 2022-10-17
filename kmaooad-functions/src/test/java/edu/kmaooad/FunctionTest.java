@@ -103,18 +103,18 @@ public class FunctionTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
 
-    @Test
-    public void shouldReturnOkResponse() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-                {
-                   "message":{
-                      "message_id":1
-                   }
-                }""");
-        final HttpResponseMessage response = new Function().run(request, contextMock);
-
-        assertEquals(1, response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatus());
-    }
+//    @Test
+//    public void shouldReturnOkResponse() {
+//
+//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
+//                {
+//                   "message":{
+//                      "message_id":1
+//                   }
+//                }""");
+//        final HttpResponseMessage response = new Function().run(request, contextMock);
+//
+//        assertEquals(1, response.getBody());
+//        assertEquals(HttpStatus.OK, response.getStatus());
+//    }
 }
