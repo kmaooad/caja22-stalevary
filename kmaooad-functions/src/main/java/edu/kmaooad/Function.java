@@ -19,6 +19,7 @@ public class Function {
     private static final String MONGO_URL = System.getenv("MONGO_URL");
     private static final String DATABASE = "caja22-stalevary";
     private static final String COLLECTION = "messages";
+
     /**
      * This function listens at endpoint "/api/TelegramWebhook". To invoke it using "curl" command in bash:
      * curl -d "HTTP Body" {your host}/api/TelegramWebhook
@@ -29,16 +30,24 @@ public class Function {
                     name = "req",
                     methods = {HttpMethod.POST},
                     authLevel = AuthorizationLevel.FUNCTION)
-            HttpRequestMessage<Optional<String>> request,
+                    HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        MessageRepository messageRepository = new MessageRepository(MONGO_URL,DATABASE,COLLECTION);
-
         context.getLogger().info("Java HTTP trigger processed a request.");
+        MessageRepository messageRepository = new MessageRepository(MONGO_URL, DATABASE, COLLECTION);
+
+        if (request.getBody().isEmpty())
+            return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .build();
+
         JSONObject obj = new JSONObject(request.getBody().get());
         JSONObject msg = obj.getJSONObject("message");
         messageRepository.addMessage(msg);
         int msgId = msg.getInt("message_id");
 
-        return request.createResponseBuilder(HttpStatus.OK).body(msgId).build();
+        return request
+                .createResponseBuilder(HttpStatus.OK)
+                .body(msgId)
+                .build();
     }
 }
