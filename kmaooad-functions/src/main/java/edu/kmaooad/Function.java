@@ -1,5 +1,11 @@
 package edu.kmaooad;
 
+import edu.kmaooad.exception.DatabaseConnectionException;
+import edu.kmaooad.exception.EmptyRequestBodyException;
+import edu.kmaooad.exception.InvalidOperationException;
+import edu.kmaooad.repository.MessageRepository;
+import edu.kmaooad.repository.MessageRepositoryImpl;
+import org.json.JSONException;
 import org.json.JSONObject;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -33,21 +39,36 @@ public class Function {
                     HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
-        MessageRepository messageRepository = new MessageRepository(MONGO_URL, DATABASE, COLLECTION);
 
-        if (request.getBody().isEmpty())
-            return request
-                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+        JSONObject messageJson;
+        int messageId;
+
+        try {
+            String body = request.getBody().orElseThrow(EmptyRequestBodyException::new);
+
+            JSONObject bodyJson = new JSONObject(body);
+            messageJson = bodyJson.getJSONObject("message");
+            messageId = messageJson.getInt("message_id");
+        } catch (EmptyRequestBodyException | JSONException exception) {
+
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .body(exception.getMessage())
                     .build();
+        }
 
-        JSONObject obj = new JSONObject(request.getBody().get());
-        JSONObject msg = obj.getJSONObject("message");
-        messageRepository.addMessage(msg);
-        int msgId = msg.getInt("message_id");
+        try {
+            MessageRepository messageRepository = new MessageRepositoryImpl(MONGO_URL, DATABASE, COLLECTION);
+            messageRepository.addMessage(messageJson);
+        } catch (InvalidOperationException | DatabaseConnectionException exception) {
+
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .body(exception.getMessage())
+                    .build();
+        }
 
         return request
                 .createResponseBuilder(HttpStatus.OK)
-                .body(msgId)
+                .body(messageId)
                 .build();
     }
 }
