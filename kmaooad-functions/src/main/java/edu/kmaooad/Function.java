@@ -1,5 +1,9 @@
 package edu.kmaooad;
 
+import edu.kmaooad.exception.EmptyRequestBodyException;
+import edu.kmaooad.repository.MessageRepository;
+import edu.kmaooad.repository.MessageRepositoryImpl;
+import org.json.JSONException;
 import org.json.JSONObject;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -16,6 +20,10 @@ import java.util.Optional;
  * Azure Functions with HTTP Trigger.
  */
 public class Function {
+    private static final String MONGO_URL = "mongodb+srv://admin:Hi6EWgtnkBej3pcn@cluster0.rxe1xqc.mongodb.net/?retryWrites=true&w=majority";
+    private static final String DATABASE = "caja22-stalevary";
+    private static final String COLLECTION = "messages";
+
     /**
      * This function listens at endpoint "/api/TelegramWebhook". To invoke it using "curl" command in bash:
      * curl -d "HTTP Body" {your host}/api/TelegramWebhook
@@ -26,14 +34,39 @@ public class Function {
                     name = "req",
                     methods = {HttpMethod.POST},
                     authLevel = AuthorizationLevel.FUNCTION)
-            HttpRequestMessage<Optional<String>> request,
+                    HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
-        JSONObject obj = new JSONObject(request.getBody().get());
 
-        JSONObject msg = obj.getJSONObject("message");
-        int msgId = msg.getInt("message_id");
+        JSONObject messageJson;
+        int messageId;
 
-        return request.createResponseBuilder(HttpStatus.OK).body(msgId).build();
+        try {
+            String body = request.getBody().orElseThrow(EmptyRequestBodyException::new);
+
+            JSONObject bodyJson = new JSONObject(body);
+            messageJson = bodyJson.getJSONObject("message");
+            messageId = messageJson.getInt("message_id");
+        } catch (EmptyRequestBodyException | JSONException exception) {
+
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .body(exception.getMessage())
+                    .build();
+        }
+
+        try {
+            MessageRepository messageRepository = new MessageRepositoryImpl(MONGO_URL, DATABASE, COLLECTION);
+            messageRepository.addMessage(messageJson);
+        } catch (Exception exception) {
+
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .body(exception.getMessage())
+                    .build();
+        }
+
+        return request
+                .createResponseBuilder(HttpStatus.OK)
+                .body(messageId)
+                .build();
     }
 }

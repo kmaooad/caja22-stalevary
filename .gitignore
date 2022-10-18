@@ -1,5 +1,5 @@
 # Build output
-target/
+kmaooad-functions/target/
 *.class
 
 # Log file
