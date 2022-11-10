@@ -1,8 +1,7 @@
 package edu.kmaooad.repository;
 
-import org.json.JSONObject;
+import edu.kmaooad.dto.BotUpdate;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface MessageRepository {
-
-    void addMessage(JSONObject message);
+public interface MessageRepository extends MongoRepository<BotUpdate, String> {
 }
