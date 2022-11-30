@@ -27,8 +27,11 @@ public class TelegramWebhook implements Function<Update, BotUpdateResult> {
             Message message = update.getMessage();
             dispatcher.dispatch(message);
             return BotUpdateResult.Ok(message.getMessageId());
-        }
-        else
-            return BotUpdateResult.Error("Empty update");
+        } else
+            return BotUpdateResult.Error(emptyUpdateMessage());
+    }
+
+    static String emptyUpdateMessage() {
+        return "Empty update";
     }
 }

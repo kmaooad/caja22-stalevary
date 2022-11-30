@@ -1,103 +1,84 @@
 package edu.kmaooad;
 
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.kmaooad.core.Dispatcher;
+import edu.kmaooad.core.Handler;
 import edu.kmaooad.dto.BotUpdateResult;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 public class TelegramWebhookTest {
 
-    private HttpRequestMessage<Optional<String>> setupHttpRequestMock(String body) {
-        final HttpRequestMessage<Optional<String>> requestMock = mock(HttpRequestMessage.class);
-        when(requestMock.getBody()).thenReturn(Optional.ofNullable(body));
+    @Test
+    void shouldReturnBadUpdateForNullParam() {
+        Dispatcher dispatcher = mock(Dispatcher.class);
 
-        when(requestMock.createResponseBuilder(any(HttpStatus.class)))
-                .thenAnswer((Answer<HttpResponseMessage.Builder>) invocation ->
-                        new HttpResponseMessageMock
-                                .HttpResponseMessageBuilderMock()
-                                .status(invocation.getArgument(0))
-                );
-        return requestMock;
+        List<Handler> handlerList = new ArrayList<>();
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+
+        BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(null);
+
+        verify(dispatcher, times(0)).dispatch(any());
+        assertEquals(result.errorMessage(), TelegramWebhook.emptyUpdateMessage());
     }
 
-    private ExecutionContext getExecutionContext() {
-        ExecutionContext contextMock = mock(ExecutionContext.class);
-        when(contextMock.getLogger()).thenReturn(Logger.getGlobal());
-        return contextMock;
+    @Test
+    void shouldReturnBadUpdateForEmptyMessage() {
+        Dispatcher dispatcher = mock(Dispatcher.class);
+
+        List<Handler> handlerList = new ArrayList<>();
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+
+        BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(updateWithoutMessage());
+
+        verify(dispatcher, times(0)).dispatch(any());
+        assertEquals(result.errorMessage(), TelegramWebhook.emptyUpdateMessage());
     }
 
-    private TelegramWebhookHandler getSucceedHandler() {
-        TelegramWebhookHandler handler = spy(TelegramWebhookHandler.class);
-        doAnswer(
-                invocationOnMock -> {
-                    Update update = invocationOnMock.getArgument(0);
-                    return BotUpdateResult.Ok(update.getMessage().getMessageId());
+    @Test
+    void shouldReturnOkUpdate() {
+        Dispatcher dispatcher = mock(Dispatcher.class);
+
+        List<Handler> handlerList = new ArrayList<>();
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+        handlerList.add(mock(Handler.class));
+
+        Update update = updateWithMessage();
+
+        BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(update);
+
+        verify(dispatcher, times(1)).dispatch(any());
+        assertEquals(result.messageId(), update.getMessage().getMessageId());
+    }
+
+    private Update updateWithoutMessage() {
+        String updateJson = """
+                {
+                   "update_id":260336395
                 }
-        )
-                .when(handler)
-                .handleRequest(any(Update.class), any(ExecutionContext.class));
-        return handler;
+                """;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(updateJson, Update.class);
+        } catch (JsonProcessingException exception) {
+            return null;
+        }
     }
 
-    private TelegramWebhookHandler getFailedHandler() {
-        TelegramWebhookHandler handler = spy(TelegramWebhookHandler.class);
-        doAnswer(
-                invocationOnMock -> BotUpdateResult.Error("")
-        )
-                .when(handler)
-                .handleRequest(any(Update.class), any(ExecutionContext.class));
-        return handler;
-    }
-
-    @Test
-    public void shouldReturnBadResponseWhenEmptyBody() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock(null);
-        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-    }
-
-    @Test
-    public void shouldReturnBadResponseWhenIncorrectJsonBody() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("string");
-        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-    }
-
-    @Test
-    public void shouldReturnBadResponseWhenMessageNonPresent() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-                {
-                   "msg":{
-                     \s
-                   }
-                }""");
-        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-    }
-
-    @Test
-    public void shouldReturnOkResponse() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
+    private Update updateWithMessage() {
+        String updateJson = """
                 {
                    "update_id":260336395,
                    "message":{
@@ -127,49 +108,13 @@ public class TelegramWebhookTest {
                          }
                       ]
                    }
-                }""");
-        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
-
-        assertEquals(207, response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatus());
-    }
-
-    @Test
-    public void shouldReturnBadResponseForFailedHandler() {
-
-        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-                {
-                   "update_id":260336395,
-                   "message":{
-                      "message_id":207,
-                      "from":{
-                         "id":384859024,
-                         "is_bot":false,
-                         "first_name":"Vlad",
-                         "last_name":"Kozyr",
-                         "username":"vladyslav_kozyr",
-                         "language_code":"en"
-                      },
-                      "chat":{
-                         "id":384859024,
-                         "first_name":"Vlad",
-                         "last_name":"Kozyr",
-                         "username":"vladyslav_kozyr",
-                         "type":"private"
-                      },
-                      "date":1669839096,
-                      "text":"/course",
-                      "entities":[
-                         {
-                            "offset":0,
-                            "length":7,
-                            "type":"bot_command"
-                         }
-                      ]
-                   }
-                }""");
-        final HttpResponseMessage response = getFailedHandler().run(request, getExecutionContext());
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+                }
+                """;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(updateJson, Update.class);
+        } catch (JsonProcessingException exception) {
+            return null;
+        }
     }
 }
