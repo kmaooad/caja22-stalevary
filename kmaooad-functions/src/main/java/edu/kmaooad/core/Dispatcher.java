@@ -31,8 +31,6 @@ public class Dispatcher {
                 .getSessionByUserId(message.getChatId())
                 .orElseGet(() -> sessionService.createSessionByUserId(message.getChatId()));
 
-        System.out.println("USER_SESSION: " + userSession);
-
         Optional<Handler> commandHandler = handlers.stream()
                 .filter(h -> h.getCommands() != null
                         && h.getCommands().stream().anyMatch(c -> ("/" + c).equalsIgnoreCase(message.getText())))

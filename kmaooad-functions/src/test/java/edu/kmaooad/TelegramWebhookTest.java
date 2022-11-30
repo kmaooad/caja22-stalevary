@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -67,56 +68,50 @@ public class TelegramWebhookTest {
     private ApplicationContext applicationContext;
 
     @Test
-    public void test() {
-        assert true;
+    public void shouldReturnBadResponseWhenEmptyBody() {
+
+        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock(null);
+        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
 
+    @Test
+    public void shouldReturnBadResponseWhenIncorrectJsonBody() {
 
-//    @Test
-//    public void shouldReturnBadResponseWhenEmptyBody() {
-//
-//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock(null);
-//        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
-//
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-//    }
-//
-//    @Test
-//    public void shouldReturnBadResponseWhenIncorrectJsonBody() {
-//
-//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("string");
-//        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
-//
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-//    }
+        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("string");
+        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
 
-//    @Test
-//    public void shouldReturnBadResponseWhenMessageNonPresent() {
-//
-//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-//                {
-//                   "msg":{
-//                     \s
-//                   }
-//                }""");
-//        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
-//
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-//    }
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+    }
 
-//    @Test
-//    public void shouldReturnBadResponseWhenMessageIdNonPresent() {
-//
-//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-//                {
-//                   "message":{
-//                     \s
-//                   }
-//                }""");
-//        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
-//
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
-//    }
+    @Test
+    public void shouldReturnBadResponseWhenMessageNonPresent() {
+
+        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
+                {
+                   "msg":{
+                     \s
+                   }
+                }""");
+        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+    }
+
+    @Test
+    public void shouldReturnBadResponseWhenMessageIdNonPresent() {
+
+        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
+                {
+                   "message":{
+                     \s
+                   }
+                }""");
+        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+    }
 
 //    @Test
 //    public void shouldReturnOkResponse() {

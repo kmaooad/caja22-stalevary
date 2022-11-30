@@ -21,11 +21,11 @@ public class TelegramWebhookHandler extends FunctionInvoker<Update, BotUpdateRes
                     name = "req",
                     methods = {HttpMethod.POST},
                     authLevel = AuthorizationLevel.FUNCTION)
-                    HttpRequestMessage<Optional<String>> request,
+            HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
-        Update update = null;
-
+        Update update;
+        BotUpdateResult result;
 
         try {
             final String body = request
@@ -34,11 +34,10 @@ public class TelegramWebhookHandler extends FunctionInvoker<Update, BotUpdateRes
 
             final ObjectMapper mapper = new ObjectMapper();
             update = mapper.readValue(body, Update.class);
+            result = handleRequest(update, context);
         } catch (Exception exception) {
-            System.out.println("REQUEST: " + exception);
+            result = BotUpdateResult.Error(exception.getMessage());
         }
-
-        BotUpdateResult result = handleRequest(update, context);
 
         if (result.errorMessage() == null)
             return request
