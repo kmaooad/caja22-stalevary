@@ -4,12 +4,10 @@ import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
+import edu.kmaooad.dto.BotUpdateResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
@@ -21,17 +19,6 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class TelegramWebhookTest {
-
-    @TestConfiguration
-    static class TestConfig {
-
-//        @Bean
-//        @Primary
-//        public MessageService getMessageService() {
-//            MessageService service = mock(MessageService.class);
-//            return service;
-//        }
-    }
 
     private HttpRequestMessage<Optional<String>> setupHttpRequestMock(String body) {
         final HttpRequestMessage<Optional<String>> requestMock = mock(HttpRequestMessage.class);
@@ -52,26 +39,34 @@ public class TelegramWebhookTest {
         return contextMock;
     }
 
-    private TelegramWebhookHandler getHandler() {
+    private TelegramWebhookHandler getSucceedHandler() {
         TelegramWebhookHandler handler = spy(TelegramWebhookHandler.class);
         doAnswer(
-                invocationOnMock -> applicationContext
-                        .getBean(TelegramWebhook.class)
-                        .apply(invocationOnMock.getArgument(0))
+                invocationOnMock -> {
+                    Update update = invocationOnMock.getArgument(0);
+                    return BotUpdateResult.Ok(update.getMessage().getMessageId());
+                }
         )
                 .when(handler)
                 .handleRequest(any(Update.class), any(ExecutionContext.class));
         return handler;
     }
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private TelegramWebhookHandler getFailedHandler() {
+        TelegramWebhookHandler handler = spy(TelegramWebhookHandler.class);
+        doAnswer(
+                invocationOnMock -> BotUpdateResult.Error("")
+        )
+                .when(handler)
+                .handleRequest(any(Update.class), any(ExecutionContext.class));
+        return handler;
+    }
 
     @Test
     public void shouldReturnBadResponseWhenEmptyBody() {
 
         final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock(null);
-        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
@@ -80,7 +75,7 @@ public class TelegramWebhookTest {
     public void shouldReturnBadResponseWhenIncorrectJsonBody() {
 
         final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("string");
-        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
@@ -94,37 +89,87 @@ public class TelegramWebhookTest {
                      \s
                    }
                 }""");
-        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
 
     @Test
-    public void shouldReturnBadResponseWhenMessageIdNonPresent() {
+    public void shouldReturnOkResponse() {
 
         final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
                 {
+                   "update_id":260336395,
                    "message":{
-                     \s
+                      "message_id":207,
+                      "from":{
+                         "id":384859024,
+                         "is_bot":false,
+                         "first_name":"Vlad",
+                         "last_name":"Kozyr",
+                         "username":"vladyslav_kozyr",
+                         "language_code":"en"
+                      },
+                      "chat":{
+                         "id":384859024,
+                         "first_name":"Vlad",
+                         "last_name":"Kozyr",
+                         "username":"vladyslav_kozyr",
+                         "type":"private"
+                      },
+                      "date":1669839096,
+                      "text":"/course",
+                      "entities":[
+                         {
+                            "offset":0,
+                            "length":7,
+                            "type":"bot_command"
+                         }
+                      ]
                    }
                 }""");
-        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
+        final HttpResponseMessage response = getSucceedHandler().run(request, getExecutionContext());
+
+        assertEquals(207, response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatus());
+    }
+
+    @Test
+    public void shouldReturnBadResponseForFailedHandler() {
+
+        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
+                {
+                   "update_id":260336395,
+                   "message":{
+                      "message_id":207,
+                      "from":{
+                         "id":384859024,
+                         "is_bot":false,
+                         "first_name":"Vlad",
+                         "last_name":"Kozyr",
+                         "username":"vladyslav_kozyr",
+                         "language_code":"en"
+                      },
+                      "chat":{
+                         "id":384859024,
+                         "first_name":"Vlad",
+                         "last_name":"Kozyr",
+                         "username":"vladyslav_kozyr",
+                         "type":"private"
+                      },
+                      "date":1669839096,
+                      "text":"/course",
+                      "entities":[
+                         {
+                            "offset":0,
+                            "length":7,
+                            "type":"bot_command"
+                         }
+                      ]
+                   }
+                }""");
+        final HttpResponseMessage response = getFailedHandler().run(request, getExecutionContext());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     }
-
-//    @Test
-//    public void shouldReturnOkResponse() {
-//
-//        final HttpRequestMessage<Optional<String>> request = setupHttpRequestMock("""
-//                {
-//                   "message":{
-//                      "message_id": "1"
-//                   }
-//                }""");
-//        final HttpResponseMessage response = getHandler().run(request, getExecutionContext());
-//
-//        assertEquals("1", response.getBody());
-//        assertEquals(HttpStatus.OK, response.getStatus());
-//    }
 }
