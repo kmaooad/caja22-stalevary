@@ -1,9 +1,9 @@
 package edu.kmaooad.dto;
 
 //TODO: refactor to generic result wrapper
-public record BotUpdateResult(String messageId, String errorMessage) {
+public record BotUpdateResult(Integer messageId, String errorMessage) {
 
-    public static BotUpdateResult Ok(String messageId) {
+    public static BotUpdateResult Ok(Integer messageId) {
         return new BotUpdateResult(messageId, null);
     }
 
