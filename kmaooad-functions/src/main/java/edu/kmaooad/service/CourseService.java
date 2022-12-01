@@ -37,7 +37,7 @@ public class CourseService {
                 .orElseThrow(IncorrectIdException::new);
 
         course.setTitle(courseDto.getTitle());
-        course.setDescription(course.getDescription());
+        course.setDescription(courseDto.getDescription());
 
         return courseRepository.save(course);
     }
