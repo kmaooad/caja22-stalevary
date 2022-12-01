@@ -2,6 +2,7 @@ package edu.kmaooad.app;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.kmaooad.core.StateMachineException;
 import edu.kmaooad.core.session.ISessionService;
 import edu.kmaooad.core.state.State;
 import edu.kmaooad.core.state.StateMachine;
@@ -20,12 +21,13 @@ public class StateMachineImpl implements StateMachine {
     }
 
     @Override
-    public void updateStateData(Long userId, State.Group group, Object obj) {
+    public void updateStateData(Long userId, State.Group group, Object obj) throws StateMachineException {
         try {
             String payloadString = new ObjectMapper().writeValueAsString(obj);
 
             sessionService.updateGroupStatePayload(userId, group, payloadString);
         } catch (JsonProcessingException | IncorrectIdException exception) {
+            throw new StateMachineException(exception.getMessage());
         }
     }
 
@@ -36,16 +38,17 @@ public class StateMachineImpl implements StateMachine {
             ObjectMapper mapper = new ObjectMapper();
 
             return Optional.of(mapper.readValue(payload, payloadClass));
-        } catch (JsonProcessingException | IncorrectIdException exception) {
+        } catch (JsonProcessingException | IncorrectIdException | IllegalArgumentException exception) {
             return Optional.empty();
         }
     }
 
     @Override
-    public void setState(Long userId, State state) {
+    public void setState(Long userId, State state) throws StateMachineException {
         try {
             sessionService.updateSessionState(userId, state);
         } catch (IncorrectIdException e) {
+            throw new StateMachineException(e.getMessage());
         }
     }
 }

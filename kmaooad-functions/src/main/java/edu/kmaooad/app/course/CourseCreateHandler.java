@@ -1,6 +1,7 @@
 package edu.kmaooad.app.course;
 
 import edu.kmaooad.core.Handler;
+import edu.kmaooad.core.StateMachineException;
 import edu.kmaooad.core.state.StateMachine;
 import edu.kmaooad.telegram.TelegramService;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,12 @@ public class CourseCreateHandler implements Handler {
 
     @Override
     public void handle(Message message, StateMachine stateMachine) {
-        telegramService.sendMessage(message.getChatId(), "Enter course title: ");
-        stateMachine.setState(message.getChatId(), CourseCreate.GET_TITLE);
+        try {
+            stateMachine.setState(message.getChatId(), CourseCreate.GET_TITLE);
+            telegramService.sendMessage(message.getChatId(), "Enter course title: ");
+        } catch (StateMachineException e) {
+            telegramService.sendMessage(message.getChatId(), "Some problems!");
+        }
     }
 
     @Override

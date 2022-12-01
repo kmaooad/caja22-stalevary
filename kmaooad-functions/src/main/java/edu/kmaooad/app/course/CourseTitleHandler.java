@@ -22,11 +22,10 @@ public class CourseTitleHandler implements Handler {
         try {
             CourseDto payload = new CourseDto(message.getText(), null);
             stateMachine.updateStateData(message.getChatId(), CourseCreate.GROUP, payload);
+            stateMachine.setState(message.getChatId(), CourseCreate.GET_DESCRIPTION);
+            telegramService.sendMessage(message.getChatId(), "Enter course description: ");
         } catch (Exception exception) {
             telegramService.sendMessage(message.getChatId(), "Course don't saved: Some problem");
-        } finally {
-            telegramService.sendMessage(message.getChatId(), "Enter course description: ");
-            stateMachine.setState(message.getChatId(), CourseCreate.GET_DESCRIPTION);
         }
     }
 

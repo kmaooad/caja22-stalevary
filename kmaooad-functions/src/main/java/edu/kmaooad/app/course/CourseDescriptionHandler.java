@@ -28,11 +28,10 @@ public class CourseDescriptionHandler implements Handler {
                     .orElseThrow();
 
             courseService.createCourse(payload);
+            stateMachine.setState(message.getChatId(), new State.Any());
             telegramService.sendMessage(message.getChatId(), "Course saved");
         } catch (Exception exception) {
             telegramService.sendMessage(message.getChatId(), "Course don't saved: Some problem");
-        } finally {
-            stateMachine.setState(message.getChatId(), new State.Any());
         }
     }
 
