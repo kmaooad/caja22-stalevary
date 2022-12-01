@@ -1,6 +1,7 @@
 package edu.kmaooad.core.session;
 
 import edu.kmaooad.core.state.State;
+import edu.kmaooad.exception.IncorrectIdException;
 
 import java.util.Optional;
 
@@ -8,14 +9,13 @@ public interface ISessionService {
 
     Optional<UserSession> getSessionByUserId(Long userId);
 
-    UserSession createSessionByUserId(Long userId);
+    UserSession createSessionByUserId(Long userId) throws IncorrectIdException;
 
-    void clearSessionByUserId(Long userId);
+    UserSession clearSessionByUserId(Long userId) throws IncorrectIdException;
 
-    void updateSessionState(Long userId, State state);
+    UserSession updateSessionState(Long userId, State state) throws IncorrectIdException;
 
+    UserSession updateGroupStatePayload(Long userId, State.Group group, String payload) throws IncorrectIdException;
 
-    void updateGroupStatePayload(Long userId, State.Group group, String payload);
-
-    String getGroupStatePayload(Long userId, State.Group group);
+    String getGroupStatePayload(Long userId, State.Group group) throws IncorrectIdException;
 }
