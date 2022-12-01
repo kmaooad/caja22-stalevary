@@ -27,6 +27,7 @@ public class CourseDescriptionHandler implements Handler {
                     .getStatePayload(message.getChatId(), CourseCreate.GROUP, CourseDto.class)
                     .orElseThrow();
 
+            payload.setDescription(message.getText());
             courseService.createCourse(payload);
             stateMachine.setState(message.getChatId(), new State.Any());
             telegramService.sendMessage(message.getChatId(), "Course saved");
