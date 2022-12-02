@@ -1,33 +1,37 @@
 package edu.kmaooad;
 
-import edu.kmaooad.dto.BotUpdate;
+import edu.kmaooad.core.Dispatcher;
+import edu.kmaooad.core.Handler;
 import edu.kmaooad.dto.BotUpdateResult;
-import edu.kmaooad.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Component
-public class TelegramWebhook implements Function<BotUpdate, BotUpdateResult> {
+public class TelegramWebhook implements Function<Update, BotUpdateResult> {
 
-    private final MessageService messageService;
+    private final Dispatcher dispatcher;
 
-    public TelegramWebhook(MessageService messageService) {
-        this.messageService = messageService;
+    public TelegramWebhook(Dispatcher dispatcher, List<Handler> handlers) {
+
+        this.dispatcher = dispatcher;
+        handlers.forEach(dispatcher::registerHandler);
     }
 
     @Override
-    public BotUpdateResult apply(BotUpdate botUpdate) {
+    public BotUpdateResult apply(Update update) {
+        if (update != null && update.hasMessage()) {
+            Message message = update.getMessage();
+            dispatcher.dispatch(message);
+            return BotUpdateResult.Ok(message.getMessageId());
+        } else
+            return BotUpdateResult.Error(emptyUpdateMessage());
+    }
 
-        if (botUpdate.getErrorMessage() != null)
-            return BotUpdateResult.Error(botUpdate.getErrorMessage());
-
-        try {
-            messageService.saveMessage(botUpdate);
-            return BotUpdateResult.Ok(botUpdate.getMessageId());
-        } catch (Exception exception) {
-            return BotUpdateResult.Error(exception.getMessage());
-        }
+    static String emptyUpdateMessage() {
+        return "Empty update";
     }
 }

@@ -1,0 +1,68 @@
+{
+	"info": {
+		"_postman_id": "9fa0285f-ea61-432f-ae30-f5bfc675ca74",
+		"name": "Stalevary bot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16039010"
+	},
+	"item": [
+		{
+			"name": "Check webhook status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.telegram.org/bot5620337367:AAFqW_u_yKWlTRsh3-N_bxyTTHUiDSDCpAg/getWebhookInfo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"telegram",
+						"org"
+					],
+					"path": [
+						"bot5620337367:AAFqW_u_yKWlTRsh3-N_bxyTTHUiDSDCpAg",
+						"getWebhookInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register webhook url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.telegram.org/bot5620337367:AAFqW_u_yKWlTRsh3-N_bxyTTHUiDSDCpAg/setWebhook?url=http://localhost:7071/api/TelegramWebhook",
+					"protocol": "https",
+					"host": [
+						"api",
+						"telegram",
+						"org"
+					],
+					"path": [
+						"bot5620337367:AAFqW_u_yKWlTRsh3-N_bxyTTHUiDSDCpAg",
+						"setWebhook"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "http://localhost:7071/api/TelegramWebhook"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "BOT_TOKEN",
+			"value": "5620337367:AAFqW_u_yKWlTRsh3-N_bxyTTHUiDSDCpAg"
+		},
+		{
+			"key": "SERVER_URL",
+			"value": "https://986f-194-183-169-28.eu.ngrok.io"
+		}
+	]
+}
