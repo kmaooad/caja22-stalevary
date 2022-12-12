@@ -36,6 +36,8 @@ public class TelegramWebhookHandler extends FunctionInvoker<Update, BotUpdateRes
             update = mapper.readValue(body, Update.class);
             result = handleRequest(update, context);
         } catch (Exception exception) {
+            System.err.println(exception.getMessage());
+
             result = BotUpdateResult.Error(exception.getMessage());
         }
 
