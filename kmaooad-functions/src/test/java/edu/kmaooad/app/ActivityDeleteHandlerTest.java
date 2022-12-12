@@ -2,30 +2,24 @@ package edu.kmaooad.app;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.kmaooad.app.activities.create.*;
 import edu.kmaooad.app.activities.delete.ActivityDelete;
 import edu.kmaooad.app.activities.delete.ActivityDeleteGetId;
 import edu.kmaooad.app.activities.delete.ActivityDeleteHandler;
 import edu.kmaooad.core.StateMachineException;
 import edu.kmaooad.core.state.State;
 import edu.kmaooad.core.state.StateMachine;
-import edu.kmaooad.dto.ActivityDto;
 import edu.kmaooad.service.ActivityService;
 import edu.kmaooad.telegram.TelegramService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Objects;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 
 public class ActivityDeleteHandlerTest {
