@@ -6,6 +6,7 @@ import edu.kmaooad.core.Dispatcher;
 import edu.kmaooad.core.Handler;
 import edu.kmaooad.dto.BotUpdateResult;
 import org.junit.jupiter.api.Test;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class TelegramWebhookTest {
 
         BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(null);
 
-        verify(dispatcher, times(0)).dispatch(any());
+        verify(dispatcher, times(0)).dispatch((Message) any());
         assertEquals(result.errorMessage(), TelegramWebhook.emptyUpdateMessage());
     }
 
@@ -42,7 +43,7 @@ public class TelegramWebhookTest {
 
         BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(updateWithoutMessage());
 
-        verify(dispatcher, times(0)).dispatch(any());
+        verify(dispatcher, times(0)).dispatch((Message) any());
         assertEquals(result.errorMessage(), TelegramWebhook.emptyUpdateMessage());
     }
 
@@ -59,8 +60,8 @@ public class TelegramWebhookTest {
 
         BotUpdateResult result = new TelegramWebhook(dispatcher, handlerList).apply(update);
 
-        verify(dispatcher, times(1)).dispatch(any());
-        assertEquals(result.messageId(), update.getMessage().getMessageId());
+        verify(dispatcher, times(1)).dispatch((Message) any());
+        assertEquals(update.getMessage().getMessageId(), result.messageId());
     }
 
     private Update updateWithoutMessage() {

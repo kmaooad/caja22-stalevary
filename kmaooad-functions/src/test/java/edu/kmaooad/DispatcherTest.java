@@ -10,6 +10,7 @@ import edu.kmaooad.core.state.State;
 import edu.kmaooad.core.state.StateMachine;
 import edu.kmaooad.exception.IncorrectIdException;
 import org.junit.jupiter.api.Test;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collections;
@@ -58,9 +59,9 @@ public class DispatcherTest {
         boolean handled = dispatcher.dispatch(Objects.requireNonNull(update()).getMessage());
 
         assertTrue(handled);
-        verify(commandHandler, times(1)).handle(any(), any());
-        verify(stateHandler, times(0)).handle(any(), any());
-        verify(filterHandler, times(0)).handle(any(), any());
+        verify(commandHandler, times(1)).handle((Message) any(), any());
+        verify(stateHandler, times(0)).handle((Message) any(), any());
+        verify(filterHandler, times(0)).handle((Message) any(), any());
     }
 
     @Test
@@ -88,9 +89,9 @@ public class DispatcherTest {
         boolean handled = dispatcher.dispatch(Objects.requireNonNull(update()).getMessage());
 
         assertTrue(handled);
-        verify(commandHandler, times(1)).handle(any(), any());
-        verify(stateHandle, times(0)).handle(any(), any());
-        verify(filterHandler, times(0)).handle(any(), any());
+        verify(commandHandler, times(1)).handle((Message) any(), any());
+        verify(stateHandle, times(0)).handle((Message) any(), any());
+        verify(filterHandler, times(0)).handle((Message) any(), any());
     }
 
     @Test
@@ -113,8 +114,8 @@ public class DispatcherTest {
         boolean handled = dispatcher.dispatch(Objects.requireNonNull(update()).getMessage());
 
         assertTrue(handled);
-        verify(stateHandle, times(1)).handle(any(), any());
-        verify(filterHandler, times(0)).handle(any(), any());
+        verify(stateHandle, times(1)).handle((Message) any(), any());
+        verify(filterHandler, times(0)).handle((Message) any(), any());
     }
 
     @Test
@@ -132,7 +133,7 @@ public class DispatcherTest {
         boolean handled = dispatcher.dispatch(Objects.requireNonNull(update()).getMessage());
 
         assertTrue(handled);
-        verify(filterHandler, times(1)).handle(any(), any());
+        verify(filterHandler, times(1)).handle((Message) any(), any());
     }
 
     @Test

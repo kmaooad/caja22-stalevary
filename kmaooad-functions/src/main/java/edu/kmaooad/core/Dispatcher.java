@@ -4,6 +4,7 @@ import edu.kmaooad.core.state.StateMachine;
 import edu.kmaooad.core.session.ISessionService;
 import edu.kmaooad.core.session.UserSession;
 import edu.kmaooad.exception.IncorrectIdException;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
@@ -28,16 +29,6 @@ public class Dispatcher {
     }
 
     public boolean dispatch(Message message) {
-        UserSession userSession = sessionService
-                .getSessionByUserId(message.getChatId())
-                .orElseGet(() -> {
-                    try {
-                        return sessionService.createSessionByUserId(message.getChatId());
-                    } catch (IncorrectIdException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
         Optional<Handler> commandHandler = handlers.stream()
                 .filter(h -> h.getCommands() != null
                         && h.getCommands().stream().anyMatch(c -> ("/" + c).equalsIgnoreCase(message.getText())))
@@ -48,11 +39,7 @@ public class Dispatcher {
             return true;
         }
 
-        Optional<Handler> stateHandler = handlers.stream()
-                .filter(h -> h.getState() != null
-                        && h.getState().key().equalsIgnoreCase(userSession.currentState()))
-                .findFirst();
-
+        Optional<Handler> stateHandler = getHandlerByState(message.getChatId());
         if (stateHandler.isPresent()) {
             stateHandler.get().handle(message, stateMachine);
             return true;
@@ -69,5 +56,32 @@ public class Dispatcher {
         } else {
             return false;
         }
+    }
+
+    public boolean dispatch(CallbackQuery callbackQuery) {
+        Optional<Handler> stateHandler = getHandlerByState(callbackQuery.getMessage().getChatId());
+        if (stateHandler.isPresent()) {
+            stateHandler.get().handle(callbackQuery, stateMachine);
+            return true;
+        }
+
+        return false;
+    }
+
+    private Optional<Handler> getHandlerByState(Long chatId) {
+        UserSession userSession = sessionService
+                .getSessionByUserId(chatId)
+                .orElseGet(() -> {
+                    try {
+                        return sessionService.createSessionByUserId(chatId);
+                    } catch (IncorrectIdException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return handlers.stream()
+                .filter(h -> h.getState() != null
+                        && h.getState().key().equalsIgnoreCase(userSession.currentState()))
+                .findFirst();
     }
 }
