@@ -49,10 +49,8 @@ public class ActivityService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(activity);
-        System.out.println("first json: "+ json);
         JSONObject jsonObject = new JSONObject(json);
         jsonObject.put(dto.getField(), dto.getValue());
-        System.out.println("updated json: "+ jsonObject.toString());
         ActivityEntity activityUpdated = objectMapper.readValue(jsonObject.toString(), ActivityEntity.class);
 
         return activityRepository.save(activityUpdated);

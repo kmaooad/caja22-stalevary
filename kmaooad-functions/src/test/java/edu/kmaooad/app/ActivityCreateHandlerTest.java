@@ -170,7 +170,7 @@ public class ActivityCreateHandlerTest {
                 .when(stateMachine)
                 .setState(anyLong(), any());
 
-        activityDescriptionHandler.handle(Objects.requireNonNull(withText("11.12.22")), stateMachine);
+        activityDateHandler.handle(Objects.requireNonNull(withText("11.12.22")), stateMachine);
 
         verify(stateMachine, times(1)).getStatePayload(384859024L, ActivityCreate.GROUP, ActivityDto.class);
         verify(stateMachine, times(0)).setState(anyLong(), any());
@@ -184,9 +184,19 @@ public class ActivityCreateHandlerTest {
                 .when(stateMachine)
                 .updateStateData(anyLong(), any(), any());
 
-        activityDescriptionHandler.handle(Objects.requireNonNull(withText("11.12.22")), stateMachine);
+        activityDateHandler.handle(Objects.requireNonNull(withText("11.12.22")), stateMachine);
 
         verify(stateMachine, times(1)).getStatePayload(384859024L, ActivityCreate.GROUP, ActivityDto.class);
+        verify(stateMachine, times(0)).updateStateData(anyLong(), any(), any());
+        verify(stateMachine, times(0)).setState(anyLong(), any());
+        verify(telegramService, times(1)).sendMessage(any(), any());
+    }
+
+    @Test
+    void shouldFailValidation_onDateHandler() throws StateMachineException {
+        activityDateHandler.handle(Objects.requireNonNull(withText("11/12/22")), stateMachine);
+
+        verify(stateMachine, times(0)).getStatePayload(anyLong(), any(), any());
         verify(stateMachine, times(0)).updateStateData(anyLong(), any(), any());
         verify(stateMachine, times(0)).setState(anyLong(), any());
         verify(telegramService, times(1)).sendMessage(any(), any());
@@ -215,7 +225,7 @@ public class ActivityCreateHandlerTest {
                 .when(stateMachine)
                 .setState(anyLong(), any());
 
-        activityDescriptionHandler.handle(Objects.requireNonNull(withText("11:12")), stateMachine);
+        activityTimeHandler.handle(Objects.requireNonNull(withText("11:12")), stateMachine);
 
         verify(stateMachine, times(1)).getStatePayload(384859024L, ActivityCreate.GROUP, ActivityDto.class);
         verify(stateMachine, times(0)).setState(anyLong(), any());
@@ -229,9 +239,19 @@ public class ActivityCreateHandlerTest {
                 .when(stateMachine)
                 .updateStateData(anyLong(), any(), any());
 
-        activityDescriptionHandler.handle(Objects.requireNonNull(withText("11:12")), stateMachine);
+        activityTimeHandler.handle(Objects.requireNonNull(withText("11:12")), stateMachine);
 
         verify(stateMachine, times(1)).getStatePayload(384859024L, ActivityCreate.GROUP, ActivityDto.class);
+        verify(stateMachine, times(0)).updateStateData(anyLong(), any(), any());
+        verify(stateMachine, times(0)).setState(anyLong(), any());
+        verify(telegramService, times(1)).sendMessage(any(), any());
+    }
+
+    @Test
+    void shouldFailValidation_onTimeHandler() throws StateMachineException {
+        activityDateHandler.handle(Objects.requireNonNull(withText("11.12")), stateMachine);
+
+        verify(stateMachine, times(0)).getStatePayload(anyLong(), any(), any());
         verify(stateMachine, times(0)).updateStateData(anyLong(), any(), any());
         verify(stateMachine, times(0)).setState(anyLong(), any());
         verify(telegramService, times(1)).sendMessage(any(), any());
