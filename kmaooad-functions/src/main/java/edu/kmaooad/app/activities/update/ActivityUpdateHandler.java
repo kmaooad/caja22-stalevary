@@ -1,6 +1,7 @@
-package edu.kmaooad.app.activities.delete;
+package edu.kmaooad.app.activities.update;
 
 import edu.kmaooad.app.activities.Utils;
+import edu.kmaooad.app.activities.delete.ActivityDelete;
 import edu.kmaooad.core.Handler;
 import edu.kmaooad.core.state.StateMachine;
 import edu.kmaooad.model.ActivityEntity;
@@ -15,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ActivityDeleteHandler implements Handler {
+public class ActivityUpdateHandler implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public ActivityDeleteHandler(TelegramService telegramService, ActivityService activityService) {
+    public ActivityUpdateHandler(TelegramService telegramService, ActivityService activityService) {
         this.telegramService = telegramService;
         this.activityService = activityService;
     }
@@ -31,7 +32,7 @@ public class ActivityDeleteHandler implements Handler {
             List<ActivityEntity> entities = activityService.getUserActivities(message.getFrom().getId().toString());
             InlineKeyboardMarkup kb = Utils.getActivitiesKeyboard(entities);
 
-            stateMachine.setState(message.getChatId(), ActivityDelete.GET_ID);
+            stateMachine.setState(message.getChatId(), ActivityUpdate.GET_ID);
             telegramService.sendMessage(message.getChatId(), "Pick the activity:", kb);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -42,6 +43,7 @@ public class ActivityDeleteHandler implements Handler {
 
     @Override
     public List<String> getCommands() {
-        return List.of("deleteactivity");
+        return List.of("updateactivity");
     }
 }
+

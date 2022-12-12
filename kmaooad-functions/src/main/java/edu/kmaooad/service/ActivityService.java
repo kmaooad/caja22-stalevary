@@ -1,10 +1,15 @@
 package edu.kmaooad.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.kmaooad.dto.ActivityDto;
+import edu.kmaooad.dto.ActivityUpdateDto;
 import edu.kmaooad.exception.IncorrectIdException;
 import edu.kmaooad.model.ActivityEntity;
 import edu.kmaooad.repository.ActivityRepository;
+import org.json.JSONObject;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,18 +42,20 @@ public class ActivityService {
         activityRepository.save(activity);
     }
 
-    public ActivityEntity updateActivity(String id, ActivityDto dto) throws IncorrectIdException {
+    public ActivityEntity updateActivity(ActivityUpdateDto dto) throws IncorrectIdException, JsonProcessingException {
         ActivityEntity activity = activityRepository
-                .findById(id)
+                .findById(dto.getActivityId())
                 .orElseThrow(IncorrectIdException::new);
 
-        activity.setTitle(dto.getTitle());
-        activity.setDescription(dto.getDescription());
-        activity.setDate(dto.getDate());
-        activity.setTime(dto.getTime());
-        activity.setLocation(dto.getLocation());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(activity);
+        System.out.println("first json: "+ json);
+        JSONObject jsonObject = new JSONObject(json);
+        jsonObject.put(dto.getField(), dto.getValue());
+        System.out.println("updated json: "+ jsonObject.toString());
+        ActivityEntity activityUpdated = objectMapper.readValue(jsonObject.toString(), ActivityEntity.class);
 
-        return activityRepository.save(activity);
+        return activityRepository.save(activityUpdated);
     }
 
     public void deleteActivity(String id) {
