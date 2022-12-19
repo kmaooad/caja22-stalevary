@@ -62,7 +62,6 @@ public class ActivityService {
             jsonObject.put(dto.getField(), dto.getValue());
         }
         ActivityEntity activityUpdated = objectMapper.readValue(jsonObject.toString(), ActivityEntity.class);
-
         return activityRepository.save(activityUpdated);
     }
 
