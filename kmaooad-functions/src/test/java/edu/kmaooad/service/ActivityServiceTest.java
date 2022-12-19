@@ -48,10 +48,10 @@ public class ActivityServiceTest {
 
         when(activityRepository.findById(any()))
                 .then(invocationOnMock ->
-                        Optional.of(new ActivityEntity(invocationOnMock.getArgument(0), "owner_id", "old_title", "old_description", "11.11.2222", "11:11", "foo"))
+                        Optional.of(new ActivityEntity(invocationOnMock.getArgument(0), "owner_id", "old_title", "old_description", "11.11.2222", "11:11", "foo", new ArrayList<String>()))
                 );
 
-        ActivityUpdateDto activityUpdateDto = new ActivityUpdateDto("id", "title", "new_title");
+        ActivityUpdateDto activityUpdateDto = new ActivityUpdateDto("id", "title", "new_title", null);
         ActivityEntity result = activityService.updateActivity(activityUpdateDto);
 
         verify(activityRepository, times(1)).save(any());
@@ -68,7 +68,7 @@ public class ActivityServiceTest {
         when(activityRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
-        ActivityUpdateDto dto = new ActivityUpdateDto("id", "field", "description");
+        ActivityUpdateDto dto = new ActivityUpdateDto("id", "field", "description", null);
         assertThrows(IncorrectIdException.class, () -> activityService.updateActivity(dto));
 
         verify(activityRepository, times(1)).findById(any());
@@ -78,9 +78,9 @@ public class ActivityServiceTest {
     @Test
     void shouldReturnAllCourses() {
         List<ActivityEntity> activities = new ArrayList<>();
-        activities.add(new ActivityEntity("1", "11", "title1", "description1", "11.11.11", "11:11", "foo"));
-        activities.add(new ActivityEntity("2", "22", "title2", "description2", "22.22.22", "22:22", "bar"));
-        activities.add(new ActivityEntity("3", "33", "title3", "description3", "22.22.22", "22:22", "baz"));
+        activities.add(new ActivityEntity("1", "11", "title1", "description1", "11.11.11", "11:11", "foo", new ArrayList<String>()));
+        activities.add(new ActivityEntity("2", "22", "title2", "description2", "22.22.22", "22:22", "bar", new ArrayList<String>()));
+        activities.add(new ActivityEntity("3", "33", "title3", "description3", "22.22.22", "22:22", "baz", new ArrayList<String>()));
 
         when(activityRepository.findAll())
                 .thenReturn(activities);

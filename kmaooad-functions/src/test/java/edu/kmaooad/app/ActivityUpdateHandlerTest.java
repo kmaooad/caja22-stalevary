@@ -87,7 +87,7 @@ public class ActivityUpdateHandlerTest {
     @Test
     void shouldUpdateState_onGetField() throws StateMachineException {
         when(stateMachine.getStatePayload(any(), any(), any()))
-                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null)));
+                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null, null)));
 
         activityUpdateGetField.handle(callbackQuery("title"), stateMachine);
 
@@ -100,7 +100,7 @@ public class ActivityUpdateHandlerTest {
     @Test
     void shouldCatchExceptionOnUpdateState_onGetField() throws StateMachineException {
         when(stateMachine.getStatePayload(any(), any(), any()))
-                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null)));
+                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null, null)));
 
         doThrow(new StateMachineException(""))
                 .when(stateMachine)
@@ -117,7 +117,7 @@ public class ActivityUpdateHandlerTest {
     @Test
     void shouldUpdateActivity_onGetValue() throws StateMachineException, IncorrectIdException, JsonProcessingException {
         when(stateMachine.getStatePayload(any(), any(), any()))
-                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null)));
+                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null, null)));
 
         activityUpdateGetValue.handle(withText("new title"), stateMachine);
 
@@ -130,7 +130,7 @@ public class ActivityUpdateHandlerTest {
     @Test
     void shouldCatchExceptionOnUpdateActivity_onGetValue() throws StateMachineException, IncorrectIdException, JsonProcessingException {
         when(stateMachine.getStatePayload(any(), any(), any()))
-                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null)));
+                .thenReturn(Optional.of(new ActivityUpdateDto("123", null, null, null)));
 
         doThrow(new IncorrectIdException())
                 .when(activityService)
