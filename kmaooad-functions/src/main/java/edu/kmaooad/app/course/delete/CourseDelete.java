@@ -1,9 +1,9 @@
-package edu.kmaooad.app.course;
+package edu.kmaooad.app.course.delete;
 
 import edu.kmaooad.core.state.State;
 
-public enum CourseCreate implements State, State.Group {
-    GROUP, GET_TITLE, GET_DESCRIPTION;
+public enum CourseDelete implements State, State.Group {
+    GROUP, GET_ID;
 
     @Override
     public String key() {

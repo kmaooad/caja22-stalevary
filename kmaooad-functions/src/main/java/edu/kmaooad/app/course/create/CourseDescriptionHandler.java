@@ -1,4 +1,4 @@
-package edu.kmaooad.app.course;
+package edu.kmaooad.app.course.create;
 
 import edu.kmaooad.core.Handler;
 import edu.kmaooad.core.state.State;

@@ -1,6 +1,8 @@
 package edu.kmaooad.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.kmaooad.dto.CourseDto;
+import edu.kmaooad.dto.CourseUpdateDto;
 import edu.kmaooad.exception.IncorrectIdException;
 import edu.kmaooad.model.CourseEntity;
 import edu.kmaooad.repository.CourseRepository;
@@ -39,7 +41,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void shouldUpdateCourse() throws IncorrectIdException {
+    void shouldUpdateCourse() throws IncorrectIdException, JsonProcessingException {
         when(courseRepository.save(any()))
                 .then(invocationOnMock -> invocationOnMock.getArgument(0));
 
@@ -48,14 +50,13 @@ public class CourseServiceTest {
                         Optional.of(new CourseEntity(invocationOnMock.getArgument(0), "old_title", "old_description"))
                 );
 
-        CourseDto course = new CourseDto("title", "description");
-        CourseEntity result = courseService.updateCourse("1", course);
+        CourseUpdateDto courseUpdateDto = new CourseUpdateDto("1","title","new_title");
+        CourseEntity result = courseService.updateCourse( courseUpdateDto);
 
         verify(courseRepository, times(1)).save(any());
         verify(courseRepository, times(1)).findById(any());
 
-        assertEquals(result.getTitle(), course.getTitle());
-        assertEquals(result.getDescription(), course.getDescription());
+        assertEquals(result.getTitle(), courseUpdateDto.getValue());
     }
 
     @Test
@@ -66,8 +67,9 @@ public class CourseServiceTest {
         when(courseRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
-        CourseDto course = new CourseDto("title", "description");
-        assertThrows(IncorrectIdException.class, () -> courseService.updateCourse("1", course));
+        CourseUpdateDto courseUpdateDto = new CourseUpdateDto("1","title","new_title");
+
+        assertThrows(IncorrectIdException.class, () -> courseService.updateCourse(courseUpdateDto));
 
         verify(courseRepository, times(1)).findById(any());
         verify(courseRepository, times(0)).save(any());

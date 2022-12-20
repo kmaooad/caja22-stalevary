@@ -1,4 +1,4 @@
-package edu.kmaooad.app.course;
+package edu.kmaooad.app.course.create;
 
 import edu.kmaooad.core.Handler;
 import edu.kmaooad.core.StateMachineException;
@@ -30,6 +30,6 @@ public class CourseCreateHandler implements Handler {
 
     @Override
     public List<String> getCommands() {
-        return List.of("course");
+        return List.of("createcourse");
     }
 }

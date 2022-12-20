@@ -2,10 +2,10 @@ package edu.kmaooad.app;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.kmaooad.app.course.CourseCreate;
-import edu.kmaooad.app.course.CourseCreateHandler;
-import edu.kmaooad.app.course.CourseDescriptionHandler;
-import edu.kmaooad.app.course.CourseTitleHandler;
+import edu.kmaooad.app.course.create.CourseCreate;
+import edu.kmaooad.app.course.create.CourseCreateHandler;
+import edu.kmaooad.app.course.create.CourseDescriptionHandler;
+import edu.kmaooad.app.course.create.CourseTitleHandler;
 import edu.kmaooad.core.StateMachineException;
 import edu.kmaooad.core.state.State;
 import edu.kmaooad.core.state.StateMachine;
