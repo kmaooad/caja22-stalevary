@@ -26,11 +26,11 @@ public class CompetenceUpdateGetValue implements Handler {
         try {
             String competence = callbackQuery.getData();
             CompetenceUpdateDto payload = stateMachine
-                    .getStatePayload(callbackQuery.getMessage().getChatId(), ActivityUpdate.GROUP, CompetenceUpdateDto.class)
+                    .getStatePayload(callbackQuery.getMessage().getChatId(), CompetenceUpdate.GROUP, CompetenceUpdateDto.class)
                     .orElseThrow();
             payload.setCompetence(competence);
 
-            stateMachine.updateStateData(callbackQuery.getMessage().getChatId(), ActivityUpdate.GROUP, payload);
+            stateMachine.updateStateData(callbackQuery.getMessage().getChatId(), CompetenceUpdate.GROUP, payload);
             stateMachine.setState(callbackQuery.getMessage().getChatId(), CompetenceUpdate.UPDATE_VALUE);
             telegramService.sendMessage(callbackQuery.getMessage().getChatId(), "Type new competence name");
         } catch (Exception e) {

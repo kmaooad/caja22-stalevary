@@ -45,7 +45,7 @@ public class CompetenceUpdateGetCompetences implements Handler {
             competenceUpdateDto.setActivityUpdateDto(payload);
             competenceUpdateDto.setEntity(activity);
 
-            stateMachine.updateStateData(callbackQuery.getMessage().getChatId(), ActivityUpdate.GROUP, competenceUpdateDto);
+            stateMachine.updateStateData(callbackQuery.getMessage().getChatId(), CompetenceUpdate.GROUP, competenceUpdateDto);
             if(activity.getCompetences().size() == 0){
                 stateMachine.setState(callbackQuery.getMessage().getChatId(),  new State.Any());
                 telegramService.sendMessage(callbackQuery.getMessage().getChatId(), "Current activity hasn't competences");

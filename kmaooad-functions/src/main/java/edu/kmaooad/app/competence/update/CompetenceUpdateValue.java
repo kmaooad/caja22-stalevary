@@ -32,7 +32,7 @@ public class CompetenceUpdateValue implements Handler {
             String newCompetence = message.getText();
 
             CompetenceUpdateDto payload = stateMachine
-                    .getStatePayload(message.getChatId(), ActivityUpdate.GROUP, CompetenceUpdateDto.class)
+                    .getStatePayload(message.getChatId(), CompetenceUpdate.GROUP, CompetenceUpdateDto.class)
                     .orElseThrow();
             ActivityUpdateDto activity = payload.getActivityUpdateDto();
             activity.setField("competences");
