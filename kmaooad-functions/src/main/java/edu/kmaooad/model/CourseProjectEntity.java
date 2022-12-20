@@ -7,24 +7,25 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "courses")
-public class CourseEntity {
+public class CourseProjectEntity {
 
     @Id
     private String id;
 
-    @Field("course_title")
+    @Field("project_title")
     private String title;
 
-    @Field("course_description")
+    @Field("project_description")
     private String description;
 
-    @Field("course_projects")
-    private List<CourseProjectEntity> projects = new ArrayList<>();
+    @Field("project_requirements")
+    private String requirements;
+
+    @Field("project_deadline")
+    private String time;
 }

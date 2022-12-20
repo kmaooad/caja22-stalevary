@@ -1,6 +1,7 @@
 package edu.kmaooad.app.activities;
 
 import edu.kmaooad.model.ActivityEntity;
+import edu.kmaooad.model.CourseEntity;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -11,6 +12,17 @@ public class Utils {
         List<List<InlineKeyboardButton>> rows = entities.stream().map(entity -> {
             InlineKeyboardButton btn = new InlineKeyboardButton();
             btn.setText(entity.getTitle() + " " + entity.getDate() + " " + entity.getTime());
+            btn.setCallbackData(entity.getId());
+            return List.of(btn);
+        }).toList();
+
+        return new InlineKeyboardMarkup(rows);
+    }
+
+    public static InlineKeyboardMarkup getCoursesKeyboard(List<CourseEntity> entities) {
+        List<List<InlineKeyboardButton>> rows = entities.stream().map(entity -> {
+            InlineKeyboardButton btn = new InlineKeyboardButton();
+            btn.setText("| " + entity.getTitle() + " | " + entity.getDescription() + " |");
             btn.setCallbackData(entity.getId());
             return List.of(btn);
         }).toList();

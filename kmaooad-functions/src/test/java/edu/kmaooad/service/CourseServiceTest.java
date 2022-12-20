@@ -1,6 +1,7 @@
 package edu.kmaooad.service;
 
 import edu.kmaooad.dto.CourseDto;
+import edu.kmaooad.dto.CourseProjectDto;
 import edu.kmaooad.exception.IncorrectIdException;
 import edu.kmaooad.model.CourseEntity;
 import edu.kmaooad.repository.CourseRepository;
@@ -45,7 +46,7 @@ public class CourseServiceTest {
 
         when(courseRepository.findById(any()))
                 .then(invocationOnMock ->
-                        Optional.of(new CourseEntity(invocationOnMock.getArgument(0), "old_title", "old_description"))
+                        Optional.of(new CourseEntity(invocationOnMock.getArgument(0), "old_title", "old_description", new ArrayList<>()))
                 );
 
         CourseDto course = new CourseDto("title", "description");
@@ -76,9 +77,9 @@ public class CourseServiceTest {
     @Test
     void shouldReturnAllCourses() {
         List<CourseEntity> courses = new ArrayList<>();
-        courses.add(new CourseEntity("1", "title", "description"));
-        courses.add(new CourseEntity("2", "title", "description"));
-        courses.add(new CourseEntity("3", "title", "description"));
+        courses.add(new CourseEntity("1", "title", "description", new ArrayList<>()));
+        courses.add(new CourseEntity("2", "title", "description", new ArrayList<>()));
+        courses.add(new CourseEntity("3", "title", "description", new ArrayList<>()));
 
         when(courseRepository.findAll())
                 .thenReturn(courses);
@@ -87,5 +88,35 @@ public class CourseServiceTest {
 
         assertIterableEquals(resultCourses, courses);
         verify(courseRepository, times(1)).findAll();
+    }
+
+    @Test
+    void shouldThrowIncorrectIdExceptionOnAddCourseProjects() {
+        when(courseRepository.findById(any()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(IncorrectIdException.class, () -> courseService.addCourseProjects("1", new ArrayList<>()));
+
+        verify(courseRepository, times(1)).findById(any());
+        verify(courseRepository, times(0)).save(any());
+    }
+
+    @Test
+    void shouldAddCourseProjects() throws IncorrectIdException {
+        List<CourseProjectDto> courseProjectDtoList = new ArrayList<>();
+        courseProjectDtoList.add(new CourseProjectDto("1", "2", "3", "12:20"));
+        courseProjectDtoList.add(new CourseProjectDto("1", "2", "3", "12:20"));
+        courseProjectDtoList.add(new CourseProjectDto("1", "2", "3", "12:20"));
+
+        when(courseRepository.save(any()))
+                .then(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        when(courseRepository.findById(any()))
+                .thenReturn(Optional.of(new CourseEntity("1", "title", "description", new ArrayList<>())));
+
+        CourseEntity resultCourse = courseService.addCourseProjects("1", courseProjectDtoList);
+
+        assertEquals(resultCourse.getProjects().size(), courseProjectDtoList.size());
+        verify(courseRepository, times(1)).findById(any());
     }
 }
