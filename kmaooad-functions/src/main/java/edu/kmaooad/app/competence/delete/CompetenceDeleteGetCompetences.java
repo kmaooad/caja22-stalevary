@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class CompetencesDeleteGetCompetences implements Handler {
+public class CompetenceDeleteGetCompetences implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesDeleteGetCompetences(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceDeleteGetCompetences(TelegramService telegramService, ActivityService activityService) {
         this.activityService = activityService;
         this.telegramService = telegramService;
     }
@@ -56,7 +56,7 @@ public class CompetencesDeleteGetCompetences implements Handler {
                 }
                 InlineKeyboardMarkup kb = Utils.getKeyboardFromDict(map);
 
-                stateMachine.setState(callbackQuery.getMessage().getChatId(), CompetencesDelete.DELETE);
+                stateMachine.setState(callbackQuery.getMessage().getChatId(), CompetenceDelete.DELETE);
                 telegramService.sendMessage(callbackQuery.getMessage().getChatId(), "Pick a competence to delete", kb);
             }
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class CompetencesDeleteGetCompetences implements Handler {
 
     @Override
     public State getState() {
-        return CompetencesDelete.GET_COMPETENCES;
+        return CompetenceDelete.GET_COMPETENCES;
     }
 }
 

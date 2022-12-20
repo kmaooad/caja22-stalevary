@@ -13,12 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import java.util.List;
 
 @Component
-public class CompetencesUpdateHandler implements Handler {
+public class CompetenceUpdateHandler implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesUpdateHandler(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceUpdateHandler(TelegramService telegramService, ActivityService activityService) {
         this.telegramService = telegramService;
         this.activityService = activityService;
     }
@@ -29,7 +29,7 @@ public class CompetencesUpdateHandler implements Handler {
             List<ActivityEntity> entities = activityService.getUserActivities(message.getFrom().getId().toString());
             InlineKeyboardMarkup kb = Utils.getActivitiesKeyboard(entities);
 
-            stateMachine.setState(message.getChatId(), CompetencesUpdate.GET_COMPETENCES);
+            stateMachine.setState(message.getChatId(), CompetenceUpdate.GET_COMPETENCES);
             telegramService.sendMessage(message.getChatId(), "Pick the activity:", kb);
         } catch (Exception e) {
             System.err.println(e.getMessage());

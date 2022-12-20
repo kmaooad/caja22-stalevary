@@ -1,30 +1,23 @@
 package edu.kmaooad.app.competence.list;
 
-import edu.kmaooad.app.activities.Utils;
-import edu.kmaooad.app.activities.create.ActivityCreate;
-import edu.kmaooad.app.activities.update.ActivityUpdate;
 import edu.kmaooad.core.Handler;
 import edu.kmaooad.core.state.State;
 import edu.kmaooad.core.state.StateMachine;
-import edu.kmaooad.dto.ActivityUpdateDto;
 import edu.kmaooad.model.ActivityEntity;
 import edu.kmaooad.service.ActivityService;
 import edu.kmaooad.telegram.TelegramService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
-public class CompetencesListGetCompetences implements Handler {
+public class CompetenceListGetCompetences implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesListGetCompetences(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceListGetCompetences(TelegramService telegramService, ActivityService activityService) {
         this.telegramService = telegramService;
         this.activityService = activityService;
     }
@@ -54,7 +47,7 @@ public class CompetencesListGetCompetences implements Handler {
 
     @Override
     public State getState() {
-        return CompetencesList.GET_COMPETENCES;
+        return CompetenceList.GET_COMPETENCES;
     }
 }
 

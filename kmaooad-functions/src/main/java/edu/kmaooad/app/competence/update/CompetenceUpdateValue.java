@@ -15,13 +15,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.List;
 
 @Component
-public class CompetencesUpdateValue implements Handler {
+public class CompetenceUpdateValue implements Handler {
 
     private final TelegramService telegramService;
 
     private final ActivityService activityService;
 
-    public CompetencesUpdateValue(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceUpdateValue(TelegramService telegramService, ActivityService activityService) {
         this.telegramService = telegramService;
         this.activityService = activityService;
     }
@@ -57,7 +57,7 @@ public class CompetencesUpdateValue implements Handler {
 
     @Override
     public State getState() {
-        return CompetencesUpdate.UPDATE_VALUE;
+        return CompetenceUpdate.UPDATE_VALUE;
     }
 }
 

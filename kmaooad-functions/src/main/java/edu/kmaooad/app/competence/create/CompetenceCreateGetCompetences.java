@@ -31,7 +31,7 @@ public class CompetenceCreateGetCompetences implements Handler {
     public void handle(Message message, StateMachine stateMachine) {
         try {
             ActivityUpdateDto payload = stateMachine
-                    .getStatePayload(message.getChatId(), ActivityUpdate.GROUP, ActivityUpdateDto.class)
+                    .getStatePayload(message.getChatId(), CompetenceCreate.GROUP, ActivityUpdateDto.class)
                     .orElseThrow();
             List<String> competences = Arrays.asList(message.getText().split("\\n"));
             payload.setArray(competences);

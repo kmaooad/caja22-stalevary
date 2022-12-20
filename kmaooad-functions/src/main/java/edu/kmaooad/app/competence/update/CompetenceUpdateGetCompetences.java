@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class CompetencesUpdateGetCompetences implements Handler {
+public class CompetenceUpdateGetCompetences implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesUpdateGetCompetences(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceUpdateGetCompetences(TelegramService telegramService, ActivityService activityService) {
         this.activityService = activityService;
         this.telegramService = telegramService;
     }
@@ -56,7 +56,7 @@ public class CompetencesUpdateGetCompetences implements Handler {
                 }
                 InlineKeyboardMarkup kb = Utils.getKeyboardFromDict(map);
 
-                stateMachine.setState(callbackQuery.getMessage().getChatId(), CompetencesUpdate.GET_VALUE);
+                stateMachine.setState(callbackQuery.getMessage().getChatId(), CompetenceUpdate.GET_VALUE);
                 telegramService.sendMessage(callbackQuery.getMessage().getChatId(), "Pick a competence to edit", kb);
             }
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class CompetencesUpdateGetCompetences implements Handler {
 
     @Override
     public State getState() {
-        return CompetencesUpdate.GET_COMPETENCES;
+        return CompetenceUpdate.GET_COMPETENCES;
     }
 }
 

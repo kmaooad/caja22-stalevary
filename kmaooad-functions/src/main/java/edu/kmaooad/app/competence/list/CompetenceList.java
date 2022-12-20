@@ -1,9 +1,9 @@
-package edu.kmaooad.app.competence.delete;
+package edu.kmaooad.app.competence.list;
 
 import edu.kmaooad.core.state.State;
 
-public enum CompetencesDelete implements State, State.Group{
-    GROUP, GET_COMPETENCES, DELETE;
+public enum CompetenceList implements State, State.Group{
+    GROUP, GET_COMPETENCES;
 
     @Override
     public String key() {

@@ -15,12 +15,12 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import java.util.List;
 
 @Component
-public class CompetencesDeleteValue implements Handler {
+public class CompetenceDeleteValue implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesDeleteValue(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceDeleteValue(TelegramService telegramService, ActivityService activityService) {
         this.activityService = activityService;
         this.telegramService = telegramService;
     }
@@ -54,7 +54,7 @@ public class CompetencesDeleteValue implements Handler {
 
     @Override
     public State getState() {
-        return CompetencesDelete.DELETE;
+        return CompetenceDelete.DELETE;
     }
 }
 

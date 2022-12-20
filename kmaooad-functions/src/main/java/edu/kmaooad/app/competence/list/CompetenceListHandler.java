@@ -1,4 +1,4 @@
-package edu.kmaooad.app.competence.delete;
+package edu.kmaooad.app.competence.list;
 
 import edu.kmaooad.app.activities.Utils;
 import edu.kmaooad.core.Handler;
@@ -13,12 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import java.util.List;
 
 @Component
-public class CompetencesDeleteHandler implements Handler {
+public class CompetenceListHandler implements Handler {
 
     private final TelegramService telegramService;
     private final ActivityService activityService;
 
-    public CompetencesDeleteHandler(TelegramService telegramService, ActivityService activityService) {
+    public CompetenceListHandler(TelegramService telegramService, ActivityService activityService) {
         this.telegramService = telegramService;
         this.activityService = activityService;
     }
@@ -29,7 +29,7 @@ public class CompetencesDeleteHandler implements Handler {
             List<ActivityEntity> entities = activityService.getUserActivities(message.getFrom().getId().toString());
             InlineKeyboardMarkup kb = Utils.getActivitiesKeyboard(entities);
 
-            stateMachine.setState(message.getChatId(), CompetencesDelete.GET_COMPETENCES);
+            stateMachine.setState(message.getChatId(), CompetenceList.GET_COMPETENCES);
             telegramService.sendMessage(message.getChatId(), "Pick the activity:", kb);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -40,6 +40,6 @@ public class CompetencesDeleteHandler implements Handler {
 
     @Override
     public List<String> getCommands() {
-        return List.of("deletecompetence");
+        return List.of("competences");
     }
 }
