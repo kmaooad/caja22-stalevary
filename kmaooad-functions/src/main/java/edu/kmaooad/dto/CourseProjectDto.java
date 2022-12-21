@@ -8,13 +8,21 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseDto {
+public class CourseProjectDto {
 
-    @JsonProperty("title")
+    @JsonProperty
     @CsvBindByName
     private String title;
 
-    @JsonProperty("description")
+    @JsonProperty
     @CsvBindByName
     private String description;
+
+    @JsonProperty
+    @CsvBindByName
+    private String requirements;
+
+    @JsonProperty
+    @CsvBindByName
+    private String time;
 }
