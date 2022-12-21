@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,4 +34,7 @@ public class ActivityEntity {
 
     @Field("location")
     private String location;
+
+    @Field("competences")
+    private List<String> competences;
 }

@@ -3,6 +3,8 @@ package edu.kmaooad.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,4 +19,7 @@ public class ActivityUpdateDto {
 
     @JsonProperty("value")
     private String value;
+
+    @JsonProperty("array")
+    private List<String> array;
 }

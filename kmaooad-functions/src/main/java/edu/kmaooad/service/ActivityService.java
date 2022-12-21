@@ -7,6 +7,7 @@ import edu.kmaooad.dto.ActivityUpdateDto;
 import edu.kmaooad.exception.IncorrectIdException;
 import edu.kmaooad.model.ActivityEntity;
 import edu.kmaooad.repository.ActivityRepository;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.query.BasicQuery;
@@ -50,9 +51,17 @@ public class ActivityService {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(activity);
         JSONObject jsonObject = new JSONObject(json);
-        jsonObject.put(dto.getField(), dto.getValue());
+        if(dto.getField().equals("competences")){
+            JSONArray array = new JSONArray();
+            for(String competence : dto.getArray()){
+                array.put(competence);
+            }
+            jsonObject.put(dto.getField(), array);
+        }
+        else{
+            jsonObject.put(dto.getField(), dto.getValue());
+        }
         ActivityEntity activityUpdated = objectMapper.readValue(jsonObject.toString(), ActivityEntity.class);
-
         return activityRepository.save(activityUpdated);
     }
 
